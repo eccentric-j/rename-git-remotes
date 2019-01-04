@@ -40,19 +40,26 @@
   [{:keys [from to]} line]
   (str (s/replace line from to) "\n"))
 
+(defn create-config-updater
+  "Updates a line within a .git/config file.
+  Takes a remote-update map and io/writer.
+  Returns reducer function to process and count lines."
+  [update writer]
+  (fn [count line]
+    (.write writer (replace-remote update line))
+    (inc count)))
+
 (defn update-remotes
   "Reads a .git/config file and writes updated config to temp file. Avoids
   holding .git/config file contents in memory by writing to temp file.
   Takes a remote-update map.
   Returns updated remote-update map"
   [{:keys [src dest] :as update}]
-  (let [count (atom 0)]
-    (with-open [r (io/reader src)
-                w (io/writer dest)]
-      (doseq [line (line-seq r)]
-        (.write w (replace-remote update line))
-        (swap! count inc)))
-    (assoc update :count @count)))
+  (with-open [r (io/reader src)
+              w (io/writer dest)]
+    (assoc update
+           :count
+           (reduce (create-config-updater update w) 0 (line-seq r)))))
 
 (defn replace-config-file
   "Replaces .git/config with updated temp file.
