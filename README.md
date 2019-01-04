@@ -6,7 +6,10 @@ Tiny Clojure CLI to rename remotes like in the case of changing a github usernam
 ## Usage
 
 ```shell
-clj -Sdeps "{:deps {jayzawrotny/rename-git-remotes {:mvn/version \"0.1.0\"}}" -m rename-git-remotes.cli my-old-username my-new-username ~/path/to/git/projects
+clj -Sdeps "{:deps {jayzawrotny/rename-git-remotes {:mvn/version \"0.1.0\"}}" \
+    -m rename-git-remotes.cli \
+    my-old-username my-new-username \
+    ~/path/to/git/projects
 ```
 
 ## License
